@@ -21,7 +21,7 @@ namespace @Settings.Namespace
     @:@WrapComment("/// ", Model.Documentation.EscapeXmlComment())
     @:/// </summary>
     }
-    public partial class @Model.Name : Microsoft.Rest.ServiceClient<@Model.Name>, I@(Model.Name), IAzureClient
+    public partial class @Model.Name : Microsoft.Azure.Management.ResourceManager.Fluent.Core.FluentServiceClientBase<@Model.Name>, I@(Model.Name), IAzureClient
     {
         @(Include(new ServiceClientBodyTemplate(), (CodeModelCs)Model))
     
@@ -33,7 +33,7 @@ namespace @Settings.Namespace
         /// <summary>
         /// Initializes client properties.
         /// </summary>
-        private void Initialize()
+        protected override void Initialize()
         {
         @foreach (var operation in Model.AllOperations) 
         {
