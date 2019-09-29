@@ -290,7 +290,15 @@ cancellationToken.ThrowIfCancellationRequested();
 }
 else
 {
+    @if ((bool) Settings.CustomSettings["IgnoreRequestUriRedirect"] && (Model.HttpMethod == HttpMethod.Put || Model.HttpMethod == HttpMethod.Patch || Model.HttpMethod == HttpMethod.Delete))
+    {
+@:System.Uri _originRequestUri = _httpRequest.RequestUri;
 @:_httpResponse = await @(Model.ClientReference).HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+    }
+    else
+    {
+@:_httpResponse = await @(Model.ClientReference).HttpClient.SendAsync(_httpRequest, cancellationToken).ConfigureAwait(false);
+    }
 }
 if (_shouldTrace)
 {
@@ -301,6 +309,13 @@ System.Net.HttpStatusCode _statusCode = _httpResponse.StatusCode;
 cancellationToken.ThrowIfCancellationRequested();
 string _responseContent = null;
 
+    @if ((bool) Settings.CustomSettings["IgnoreRequestUriRedirect"] && (Model.HttpMethod == HttpMethod.Put || Model.HttpMethod == HttpMethod.Patch || Model.HttpMethod == HttpMethod.Delete))
+    {
+@:if (!(@(Model.FailureStatusCodePredicate)))
+@:{
+@:    _httpRequest.RequestUri = _originRequestUri;
+@:}
+    }
 if (@(Model.FailureStatusCodePredicate))
 {
     var ex = new @(Model.OperationExceptionTypeString)(string.Format("Operation returned an invalid status code '{0}'", _statusCode));
